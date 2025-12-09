@@ -121,10 +121,25 @@ PY
     stage('Smoke Tests') {
       steps {
         sh '''
-          curl -s http://localhost:8001/health
+          set -euo pipefail
+
+          wait_for_http() {
+            local url="$1"
+            local tries=0
+            until curl -fsI "$url" >/dev/null; do
+              tries=$((tries + 1))
+              if [ "$tries" -ge 15 ]; then
+                curl -I "$url"
+                return 1
+              fi
+              sleep 2
+            done
+          }
+
+          wait_for_http http://localhost:8001/health
           TOKEN=$(curl -s -X POST http://localhost:8001/auth/login -H "Content-Type: application/json" -d '{"username":"admin@sentinel.care","password":"admin123"}' | jq -r .access_token)
           curl -s -H "Authorization: Bearer $TOKEN" http://localhost:8001/patients | head -c 200
-          curl -I http://localhost:8081
+          wait_for_http http://localhost:8081
         '''
       }
     }
