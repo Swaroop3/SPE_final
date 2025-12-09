@@ -166,8 +166,16 @@ PY
             if [ -x /home/swaroop/bin/trivy ]; then
               TRIVY_BIN=/home/swaroop/bin/trivy
             else
-              echo "trivy binary not found; install it or place it on PATH"
-              exit 1
+              TOOLS_DIR="${WORKSPACE:-.}/.tools/trivy"
+              mkdir -p "${TOOLS_DIR}"
+              if [ ! -x "${TOOLS_DIR}/trivy" ]; then
+                echo "Installing Trivy locally for this workspace..."
+                curl -sSL -o "${TOOLS_DIR}/trivy.tar.gz" https://github.com/aquasecurity/trivy/releases/download/v0.55.2/trivy_0.55.2_Linux-64bit.tar.gz
+                tar -xzf "${TOOLS_DIR}/trivy.tar.gz" -C "${TOOLS_DIR}" trivy
+                rm -f "${TOOLS_DIR}/trivy.tar.gz"
+                chmod +x "${TOOLS_DIR}/trivy"
+              fi
+              TRIVY_BIN="${TOOLS_DIR}/trivy"
             fi
           fi
 
