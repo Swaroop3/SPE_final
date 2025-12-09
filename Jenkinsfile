@@ -175,7 +175,11 @@ PY
     }
 
     stage('Push Images') {
-      when { branch "main" }
+      when {
+        expression {
+          sh(script: "git branch -r --contains HEAD | grep -q 'origin/main'", returnStatus: true) == 0
+        }
+      }
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
           sh '''
@@ -189,7 +193,11 @@ PY
     }
 
     stage('Pull & Deploy to K8s') {
-      when { branch "main" }
+      when {
+        expression {
+          sh(script: "git branch -r --contains HEAD | grep -q 'origin/main'", returnStatus: true) == 0
+        }
+      }
       steps {
         sh '''
           # Pull images from registry to validate availability
