@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    REGISTRY         = "docker.io/your-org"
+    REGISTRY         = "docker.io/swaroop4"
     IMAGE_TAG        = "${env.GIT_COMMIT ?: 'dev'}"
     APP_NAME         = "sentinelcare"
     MODEL_PATH       = "models/mock_artifacts/sepsis_mock_model.json"
@@ -163,13 +163,16 @@ PY
           for svc in ${MICROSERVICES}; do
             IMAGES="${IMAGES} ${REGISTRY}/${APP_NAME}-${svc}:${IMAGE_TAG}"
           done
-          if command -v trivy >/dev/null 2>&1; then
-            for img in ${IMAGES}; do
-              trivy image --severity HIGH,CRITICAL "$img"
-            done
-          else
-            echo "trivy not installed on agent"
+          set -euo pipefail
+          if ! command -v trivy >/dev/null 2>&1; then
+            mkdir -p "$HOME/bin"
+            curl -sfLo /tmp/install_trivy.sh https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh
+            bash /tmp/install_trivy.sh -b "$HOME/bin"
           fi
+          export PATH="$HOME/bin:$PATH"
+          for img in ${IMAGES}; do
+            trivy image --severity HIGH,CRITICAL "$img"
+          done
         '''
       }
     }
