@@ -164,12 +164,6 @@ PY
             IMAGES="${IMAGES} ${REGISTRY}/${APP_NAME}-${svc}:${IMAGE_TAG}"
           done
           set -euo pipefail
-          if ! command -v trivy >/dev/null 2>&1; then
-            mkdir -p "$HOME/bin"
-            curl -sfLo /tmp/install_trivy.sh https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh
-            bash /tmp/install_trivy.sh -b "$HOME/bin"
-          fi
-          export PATH="$HOME/bin:$PATH"
           for img in ${IMAGES}; do
             trivy image --severity HIGH,CRITICAL "$img"
           done
