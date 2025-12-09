@@ -63,6 +63,7 @@ pipeline {
             -Dsonar.projectKey=sentinelcare \
               -Dsonar.sources=backend/app,frontend/src \
               -Dsonar.tests=backend/tests \
+              -Dsonar.exclusions=backend/tests/** \
               -Dsonar.host.url=${SONAR_HOST_URL} \
               -Dsonar.login=${SONAR_TOKEN} \
               -Dsonar.python.version=3.11
