@@ -84,7 +84,7 @@ PY
         sh '''
           . .venv/bin/activate
           pip install pytest pytest-asyncio
-          PYTHONPATH=backend pytest backend/tests || true
+          PYTHONPATH=backend python -m pytest backend/tests || true
           cd frontend && pnpm test -- --watch=false || true
         '''
       }

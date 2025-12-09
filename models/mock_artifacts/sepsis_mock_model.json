@@ -1,13 +1,13 @@
 {
   "version": "v1.0.0-mock",
-  "intercept": -3.0,
+  "intercept": -12.0,
   "weights": {
-    "heart_rate": 0.025,
+    "heart_rate": 0.02,
     "respiratory_rate": 0.03,
-    "systolic_bp": -0.01,
-    "diastolic_bp": -0.006,
-    "spo2": -0.04,
-    "temperature_c": 0.35
+    "systolic_bp": -0.008,
+    "diastolic_bp": -0.005,
+    "spo2": -0.05,
+    "temperature_c": 0.4
   },
   "threshold": 0.5,
   "notes": "Mock logistic scoring weights for demo purposes only"
