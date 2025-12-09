@@ -159,13 +159,25 @@ PY
     stage('Image Scan') {
       steps {
         sh '''
+          set -euo pipefail
+
+          TRIVY_BIN="$(command -v trivy || true)"
+          if [ -z "${TRIVY_BIN}" ]; then
+            if [ -x /home/swaroop/bin/trivy ]; then
+              TRIVY_BIN=/home/swaroop/bin/trivy
+            else
+              echo "trivy binary not found; install it or place it on PATH"
+              exit 1
+            fi
+          fi
+
           IMAGES="${REGISTRY}/${APP_NAME}-backend:${IMAGE_TAG} ${REGISTRY}/${APP_NAME}-frontend:${IMAGE_TAG}"
           for svc in ${MICROSERVICES}; do
             IMAGES="${IMAGES} ${REGISTRY}/${APP_NAME}-${svc}:${IMAGE_TAG}"
           done
-          set -euo pipefail
+
           for img in ${IMAGES}; do
-            trivy image --severity HIGH,CRITICAL "$img"
+            "${TRIVY_BIN}" image --severity HIGH,CRITICAL "$img"
           done
         '''
       }
