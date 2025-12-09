@@ -60,8 +60,8 @@ pipeline {
         withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
           sh '''
             sonar-scanner \
-              -Dsonar.projectKey=sentinelcare \
-              -Dsonar.sources=backend,frontend/src \
+            -Dsonar.projectKey=sentinelcare \
+              -Dsonar.sources=backend/app,frontend/src \
               -Dsonar.tests=backend/tests \
               -Dsonar.host.url=${SONAR_HOST_URL} \
               -Dsonar.login=${SONAR_TOKEN} \
