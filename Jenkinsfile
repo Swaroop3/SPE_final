@@ -10,7 +10,7 @@ pipeline {
     K8S_NAMESPACE    = "sentinelcare"
     HELM_CHART_PATH  = "infra/helm/sentinelcare"
     MICROSERVICES    = "patients vitals alerts scoring simulator auth tasks audit notifications"
-    SONAR_HOST_URL   = "https://sonarqube.example.com"
+    SONAR_HOST_URL   = "http://localhost:9000"
   }
 
   options {
