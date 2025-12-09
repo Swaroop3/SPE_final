@@ -9,6 +9,8 @@ pipeline {
     COMPOSE_SERVICES = "backend frontend patients vitals alerts scoring auth tasks audit simulator notifications mongo"
     K8S_NAMESPACE    = "sentinelcare"
     HELM_CHART_PATH  = "infra/helm/sentinelcare"
+    MICROSERVICES    = "patients vitals alerts scoring simulator auth tasks audit notifications"
+    SONAR_HOST_URL   = "https://sonarqube.example.com"
   }
 
   options {
@@ -39,6 +41,33 @@ pipeline {
           pip-audit -r backend/requirements.txt || true
           cd frontend && corepack enable && pnpm install --frozen-lockfile && pnpm run lint
         '''
+    }
+  }
+
+    stage('Unit Tests') {
+      steps {
+        sh '''
+          . .venv/bin/activate
+          pip install pytest pytest-asyncio
+          PYTHONPATH=backend python -m pytest backend/tests
+          cd frontend && pnpm test -- --watch=false
+        '''
+      }
+    }
+
+    stage('SonarQube Analysis') {
+      steps {
+        withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+          sh '''
+            sonar-scanner \
+              -Dsonar.projectKey=sentinelcare \
+              -Dsonar.sources=backend,frontend/src \
+              -Dsonar.tests=backend/tests \
+              -Dsonar.host.url=${SONAR_HOST_URL} \
+              -Dsonar.login=${SONAR_TOKEN} \
+              -Dsonar.python.version=3.11
+          '''
+        }
       }
     }
 
@@ -79,17 +108,6 @@ PY
       }
     }
 
-    stage('Tests') {
-      steps {
-        sh '''
-          . .venv/bin/activate
-          pip install pytest pytest-asyncio
-          PYTHONPATH=backend python -m pytest backend/tests || true
-          cd frontend && pnpm test -- --watch=false || true
-        '''
-      }
-    }
-
     stage('Build & Up (Compose)') {
       steps {
         sh '''
@@ -125,11 +143,16 @@ PY
     stage('Image Scan') {
       steps {
         sh '''
-          command -v trivy >/dev/null 2>&1 || echo "trivy not installed on agent"
+          IMAGES="${REGISTRY}/${APP_NAME}-backend:${IMAGE_TAG} ${REGISTRY}/${APP_NAME}-frontend:${IMAGE_TAG}"
+          for svc in ${MICROSERVICES}; do
+            IMAGES="${IMAGES} ${REGISTRY}/${APP_NAME}-${svc}:${IMAGE_TAG}"
+          done
           if command -v trivy >/dev/null 2>&1; then
-            for svc in backend frontend patients vitals alerts scoring simulator auth tasks audit notifications; do
-              trivy image --severity HIGH,CRITICAL ${REGISTRY}/${APP_NAME}-${svc}:${IMAGE_TAG} || true
+            for img in ${IMAGES}; do
+              trivy image --severity HIGH,CRITICAL "$img"
             done
+          else
+            echo "trivy not installed on agent"
           fi
         '''
       }
