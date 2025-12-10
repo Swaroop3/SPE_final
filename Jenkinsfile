@@ -216,41 +216,43 @@ PY
         }
       }
       steps {
-        sh '''
-          # Pull images from registry to validate availability
-          for svc in backend frontend patients vitals alerts scoring simulator auth tasks audit notifications; do
-            docker pull ${REGISTRY}/${APP_NAME}-${svc}:${IMAGE_TAG}
-          done
+        withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+          sh '''
+            # Pull images from registry to validate availability
+            for svc in backend frontend patients vitals alerts scoring simulator auth tasks audit notifications; do
+              docker pull ${REGISTRY}/${APP_NAME}-${svc}:${IMAGE_TAG}
+            done
 
-          # Helm deploy using pulled image tags (cluster must be configured on agent)
-          helm upgrade --install ${APP_NAME} ${HELM_CHART_PATH} \
-            --namespace ${K8S_NAMESPACE} --create-namespace \
-            --set image.backend.repository=${REGISTRY}/${APP_NAME}-backend \
-            --set image.backend.tag=${IMAGE_TAG} \
-            --set image.frontend.repository=${REGISTRY}/${APP_NAME}-frontend \
-            --set image.frontend.tag=${IMAGE_TAG} \
-            --set image.patients.repository=${REGISTRY}/${APP_NAME}-patients \
-            --set image.patients.tag=${IMAGE_TAG} \
-            --set image.vitals.repository=${REGISTRY}/${APP_NAME}-vitals \
-            --set image.vitals.tag=${IMAGE_TAG} \
-            --set image.alerts.repository=${REGISTRY}/${APP_NAME}-alerts \
-            --set image.alerts.tag=${IMAGE_TAG} \
-            --set image.scoring.repository=${REGISTRY}/${APP_NAME}-scoring \
-            --set image.scoring.tag=${IMAGE_TAG} \
-            --set image.auth.repository=${REGISTRY}/${APP_NAME}-auth \
-            --set image.auth.tag=${IMAGE_TAG} \
-            --set image.tasks.repository=${REGISTRY}/${APP_NAME}-tasks \
-            --set image.tasks.tag=${IMAGE_TAG} \
-            --set image.audit.repository=${REGISTRY}/${APP_NAME}-audit \
-            --set image.audit.tag=${IMAGE_TAG} \
-            --set image.notifications.repository=${REGISTRY}/${APP_NAME}-notifications \
-            --set image.notifications.tag=${IMAGE_TAG} \
-            --set image.simulator.repository=${REGISTRY}/${APP_NAME}-simulator \
-            --set image.simulator.tag=${IMAGE_TAG}
+            # Helm deploy using pulled image tags (cluster must be configured on agent)
+            helm upgrade --install ${APP_NAME} ${HELM_CHART_PATH} \
+              --namespace ${K8S_NAMESPACE} --create-namespace \
+              --set image.backend.repository=${REGISTRY}/${APP_NAME}-backend \
+              --set image.backend.tag=${IMAGE_TAG} \
+              --set image.frontend.repository=${REGISTRY}/${APP_NAME}-frontend \
+              --set image.frontend.tag=${IMAGE_TAG} \
+              --set image.patients.repository=${REGISTRY}/${APP_NAME}-patients \
+              --set image.patients.tag=${IMAGE_TAG} \
+              --set image.vitals.repository=${REGISTRY}/${APP_NAME}-vitals \
+              --set image.vitals.tag=${IMAGE_TAG} \
+              --set image.alerts.repository=${REGISTRY}/${APP_NAME}-alerts \
+              --set image.alerts.tag=${IMAGE_TAG} \
+              --set image.scoring.repository=${REGISTRY}/${APP_NAME}-scoring \
+              --set image.scoring.tag=${IMAGE_TAG} \
+              --set image.auth.repository=${REGISTRY}/${APP_NAME}-auth \
+              --set image.auth.tag=${IMAGE_TAG} \
+              --set image.tasks.repository=${REGISTRY}/${APP_NAME}-tasks \
+              --set image.tasks.tag=${IMAGE_TAG} \
+              --set image.audit.repository=${REGISTRY}/${APP_NAME}-audit \
+              --set image.audit.tag=${IMAGE_TAG} \
+              --set image.notifications.repository=${REGISTRY}/${APP_NAME}-notifications \
+              --set image.notifications.tag=${IMAGE_TAG} \
+              --set image.simulator.repository=${REGISTRY}/${APP_NAME}-simulator \
+              --set image.simulator.tag=${IMAGE_TAG}
 
-          kubectl rollout status deploy/${APP_NAME}-backend -n ${K8S_NAMESPACE} --timeout=180s
-          kubectl rollout status deploy/${APP_NAME}-frontend -n ${K8S_NAMESPACE} --timeout=180s
-        '''
+            kubectl rollout status deploy/${APP_NAME}-backend -n ${K8S_NAMESPACE} --timeout=180s
+            kubectl rollout status deploy/${APP_NAME}-frontend -n ${K8S_NAMESPACE} --timeout=180s
+          '''
+        }
       }
     }
   }
