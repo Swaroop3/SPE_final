@@ -1,3 +1,6 @@
+global:
+  environment: dev
+
 image:
   backend:
     repository: docker.io/your-org/sentinelcare-backend
