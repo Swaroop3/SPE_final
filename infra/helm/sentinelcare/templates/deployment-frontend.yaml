@@ -53,6 +53,11 @@ spec:
     app: {{ include "sentinelcare.name" . }}
     component: frontend
   ports:
-    - port: {{ .Values.service.frontend.port }}
+    - name: http
+      port: {{ .Values.service.frontend.port }}
       targetPort: {{ .Values.service.frontend.port }}
       protocol: TCP
+      {{- if and .Values.service.frontend.nodePort (eq (.Values.service.frontend.type | default "ClusterIP") "NodePort") }}
+      nodePort: {{ .Values.service.frontend.nodePort }}
+      {{- end }}
+  type: {{ .Values.service.frontend.type | default "ClusterIP" }}

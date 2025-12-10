@@ -1,6 +1,6 @@
 FROM node:18-slim AS build
 WORKDIR /app
-ARG VITE_API_BASE="http://backend:8000"
+ARG VITE_API_BASE="http://localhost:30081"
 ENV VITE_API_BASE=${VITE_API_BASE}
 COPY frontend/pnpm-lock.yaml frontend/package.json ./ 
 RUN corepack enable && pnpm install --frozen-lockfile

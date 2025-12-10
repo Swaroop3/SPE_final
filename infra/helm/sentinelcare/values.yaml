@@ -54,8 +54,12 @@ image:
 service:
   backend:
     port: 8000
+    type: NodePort
+    nodePort: 30081
   frontend:
     port: 80
+    type: NodePort
+    nodePort: 30080
   patients:
     port: 8101
   vitals:

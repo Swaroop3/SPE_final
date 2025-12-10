@@ -11,6 +11,7 @@ pipeline {
     HELM_CHART_PATH  = "infra/helm/sentinelcare"
     MICROSERVICES    = "patients vitals alerts scoring simulator auth tasks audit notifications"
     SONAR_HOST_URL   = "http://localhost:9000"
+    FRONTEND_API_BASE = "http://localhost:30081"
   }
 
   options {
@@ -148,7 +149,8 @@ PY
       steps {
         sh '''
           docker build -f backend/Dockerfile -t ${REGISTRY}/${APP_NAME}-backend:${IMAGE_TAG} .
-          docker build -f frontend/Dockerfile -t ${REGISTRY}/${APP_NAME}-frontend:${IMAGE_TAG} .
+          docker build -f frontend/Dockerfile -t ${REGISTRY}/${APP_NAME}-frontend:${IMAGE_TAG} . \
+            --build-arg VITE_API_BASE=${FRONTEND_API_BASE}
           for svc in patients vitals alerts scoring simulator auth tasks audit notifications; do
             docker build -f services/$svc/Dockerfile -t ${REGISTRY}/${APP_NAME}-${svc}:${IMAGE_TAG} .
           done
