@@ -1,0 +1,445 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-patients
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: patients
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sentinelcare.name" . }}
+      component: patients
+  template:
+    metadata:
+      labels:
+        app: {{ include "sentinelcare.name" . }}
+        component: patients
+    spec:
+      containers:
+        - name: patients
+          image: "{{ .Values.image.patients.repository }}:{{ .Values.image.patients.tag }}"
+          imagePullPolicy: {{ .Values.image.patients.pullPolicy }}
+          env:
+            - name: MONGO_URL
+              value: "mongodb://{{ include "sentinelcare.fullname" . }}-mongo:{{ .Values.service.mongo.port }}"
+            - name: MONGO_DB
+              value: "{{ .Values.mongo.database }}"
+          ports:
+            - containerPort: {{ .Values.service.patients.port }}
+          resources:
+            {{- toYaml .Values.resources.patients | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-patients
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: patients
+spec:
+  selector:
+    app: {{ include "sentinelcare.name" . }}
+    component: patients
+  ports:
+    - port: {{ .Values.service.patients.port }}
+      targetPort: {{ .Values.service.patients.port }}
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-vitals
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: vitals
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sentinelcare.name" . }}
+      component: vitals
+  template:
+    metadata:
+      labels:
+        app: {{ include "sentinelcare.name" . }}
+        component: vitals
+    spec:
+      containers:
+        - name: vitals
+          image: "{{ .Values.image.vitals.repository }}:{{ .Values.image.vitals.tag }}"
+          imagePullPolicy: {{ .Values.image.vitals.pullPolicy }}
+          env:
+            - name: MONGO_URL
+              value: "mongodb://{{ include "sentinelcare.fullname" . }}-mongo:{{ .Values.service.mongo.port }}"
+            - name: MONGO_DB
+              value: "{{ .Values.mongo.database }}"
+          ports:
+            - containerPort: {{ .Values.service.vitals.port }}
+          resources:
+            {{- toYaml .Values.resources.vitals | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-vitals
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: vitals
+spec:
+  selector:
+    app: {{ include "sentinelcare.name" . }}
+    component: vitals
+  ports:
+    - port: {{ .Values.service.vitals.port }}
+      targetPort: {{ .Values.service.vitals.port }}
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-alerts
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: alerts
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sentinelcare.name" . }}
+      component: alerts
+  template:
+    metadata:
+      labels:
+        app: {{ include "sentinelcare.name" . }}
+        component: alerts
+    spec:
+      containers:
+        - name: alerts
+          image: "{{ .Values.image.alerts.repository }}:{{ .Values.image.alerts.tag }}"
+          imagePullPolicy: {{ .Values.image.alerts.pullPolicy }}
+          env:
+            - name: MONGO_URL
+              value: "mongodb://{{ include "sentinelcare.fullname" . }}-mongo:{{ .Values.service.mongo.port }}"
+            - name: MONGO_DB
+              value: "{{ .Values.mongo.database }}"
+          ports:
+            - containerPort: {{ .Values.service.alerts.port }}
+          resources:
+            {{- toYaml .Values.resources.alerts | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-alerts
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: alerts
+spec:
+  selector:
+    app: {{ include "sentinelcare.name" . }}
+    component: alerts
+  ports:
+    - port: {{ .Values.service.alerts.port }}
+      targetPort: {{ .Values.service.alerts.port }}
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-tasks
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: tasks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sentinelcare.name" . }}
+      component: tasks
+  template:
+    metadata:
+      labels:
+        app: {{ include "sentinelcare.name" . }}
+        component: tasks
+    spec:
+      containers:
+        - name: tasks
+          image: "{{ .Values.image.tasks.repository }}:{{ .Values.image.tasks.tag }}"
+          imagePullPolicy: {{ .Values.image.tasks.pullPolicy }}
+          env:
+            - name: MONGO_URL
+              value: "mongodb://{{ include "sentinelcare.fullname" . }}-mongo:{{ .Values.service.mongo.port }}"
+            - name: MONGO_DB
+              value: "{{ .Values.mongo.database }}"
+          ports:
+            - containerPort: {{ .Values.service.tasks.port }}
+          resources:
+            {{- toYaml .Values.resources.tasks | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-tasks
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: tasks
+spec:
+  selector:
+    app: {{ include "sentinelcare.name" . }}
+    component: tasks
+  ports:
+    - port: {{ .Values.service.tasks.port }}
+      targetPort: {{ .Values.service.tasks.port }}
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-audit
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: audit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sentinelcare.name" . }}
+      component: audit
+  template:
+    metadata:
+      labels:
+        app: {{ include "sentinelcare.name" . }}
+        component: audit
+    spec:
+      containers:
+        - name: audit
+          image: "{{ .Values.image.audit.repository }}:{{ .Values.image.audit.tag }}"
+          imagePullPolicy: {{ .Values.image.audit.pullPolicy }}
+          env:
+            - name: MONGO_URL
+              value: "mongodb://{{ include "sentinelcare.fullname" . }}-mongo:{{ .Values.service.mongo.port }}"
+            - name: MONGO_DB
+              value: "{{ .Values.mongo.database }}"
+          ports:
+            - containerPort: {{ .Values.service.audit.port }}
+          resources:
+            {{- toYaml .Values.resources.audit | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-audit
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: audit
+spec:
+  selector:
+    app: {{ include "sentinelcare.name" . }}
+    component: audit
+  ports:
+    - port: {{ .Values.service.audit.port }}
+      targetPort: {{ .Values.service.audit.port }}
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-notifications
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: notifications
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sentinelcare.name" . }}
+      component: notifications
+  template:
+    metadata:
+      labels:
+        app: {{ include "sentinelcare.name" . }}
+        component: notifications
+    spec:
+      containers:
+        - name: notifications
+          image: "{{ .Values.image.notifications.repository }}:{{ .Values.image.notifications.tag }}"
+          imagePullPolicy: {{ .Values.image.notifications.pullPolicy }}
+          env:
+            - name: MONGO_URL
+              value: "mongodb://{{ include "sentinelcare.fullname" . }}-mongo:{{ .Values.service.mongo.port }}"
+            - name: MONGO_DB
+              value: "{{ .Values.mongo.database }}"
+          ports:
+            - containerPort: {{ .Values.service.notifications.port }}
+          resources:
+            {{- toYaml .Values.resources.notifications | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-notifications
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: notifications
+spec:
+  selector:
+    app: {{ include "sentinelcare.name" . }}
+    component: notifications
+  ports:
+    - port: {{ .Values.service.notifications.port }}
+      targetPort: {{ .Values.service.notifications.port }}
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-scoring
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: scoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sentinelcare.name" . }}
+      component: scoring
+  template:
+    metadata:
+      labels:
+        app: {{ include "sentinelcare.name" . }}
+        component: scoring
+    spec:
+      containers:
+        - name: scoring
+          image: "{{ .Values.image.scoring.repository }}:{{ .Values.image.scoring.tag }}"
+          imagePullPolicy: {{ .Values.image.scoring.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.scoring.port }}
+          resources:
+            {{- toYaml .Values.resources.scoring | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-scoring
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: scoring
+spec:
+  selector:
+    app: {{ include "sentinelcare.name" . }}
+    component: scoring
+  ports:
+    - port: {{ .Values.service.scoring.port }}
+      targetPort: {{ .Values.service.scoring.port }}
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-auth
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sentinelcare.name" . }}
+      component: auth
+  template:
+    metadata:
+      labels:
+        app: {{ include "sentinelcare.name" . }}
+        component: auth
+    spec:
+      containers:
+        - name: auth
+          image: "{{ .Values.image.auth.repository }}:{{ .Values.image.auth.tag }}"
+          imagePullPolicy: {{ .Values.image.auth.pullPolicy }}
+          env:
+            - name: AUTH_SECRET
+              value: "{{ .Values.authConfig.secret }}"
+            - name: AUTH_ISSUER
+              value: "{{ .Values.authConfig.issuer }}"
+            - name: AUTH_AUDIENCE
+              value: "{{ .Values.authConfig.audience }}"
+            - name: AUTH_TOKEN_EXP_MIN
+              value: "{{ .Values.authConfig.tokenExpMin }}"
+          ports:
+            - containerPort: {{ .Values.service.auth.port }}
+          resources:
+            {{- toYaml .Values.resources.auth | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-auth
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: auth
+spec:
+  selector:
+    app: {{ include "sentinelcare.name" . }}
+    component: auth
+  ports:
+    - port: {{ .Values.service.auth.port }}
+      targetPort: {{ .Values.service.auth.port }}
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-simulator
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: simulator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sentinelcare.name" . }}
+      component: simulator
+  template:
+    metadata:
+      labels:
+        app: {{ include "sentinelcare.name" . }}
+        component: simulator
+    spec:
+      containers:
+        - name: simulator
+          image: "{{ .Values.image.simulator.repository }}:{{ .Values.image.simulator.tag }}"
+          imagePullPolicy: {{ .Values.image.simulator.pullPolicy }}
+          env:
+            - name: PATIENTS_SERVICE_URL
+              value: "http://{{ include "sentinelcare.fullname" . }}-patients:{{ .Values.service.patients.port }}"
+            - name: VITALS_SERVICE_URL
+              value: "http://{{ include "sentinelcare.fullname" . }}-vitals:{{ .Values.service.vitals.port }}"
+            - name: ALERTS_SERVICE_URL
+              value: "http://{{ include "sentinelcare.fullname" . }}-alerts:{{ .Values.service.alerts.port }}"
+            - name: SCORING_SERVICE_URL
+              value: "http://{{ include "sentinelcare.fullname" . }}-scoring:{{ .Values.service.scoring.port }}"
+            - name: SIM_INTERVAL_SECONDS
+              value: "{{ .Values.simulator.intervalSeconds }}"
+          ports:
+            - containerPort: {{ .Values.service.simulator.port }}
+          resources:
+            {{- toYaml .Values.resources.simulator | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-simulator
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: simulator
+spec:
+  selector:
+    app: {{ include "sentinelcare.name" . }}
+    component: simulator
+  ports:
+    - port: {{ .Values.service.simulator.port }}
+      targetPort: {{ .Values.service.simulator.port }}
+      protocol: TCP

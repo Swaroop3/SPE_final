@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-mongo
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: mongo
+spec:
+  selector:
+    app: {{ include "sentinelcare.name" . }}
+    component: mongo
+  ports:
+    - port: {{ .Values.service.mongo.port }}
+      targetPort: {{ .Values.service.mongo.port }}
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "sentinelcare.fullname" . }}-mongo
+  labels:
+    app: {{ include "sentinelcare.name" . }}
+    component: mongo
+spec:
+  serviceName: {{ include "sentinelcare.fullname" . }}-mongo
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sentinelcare.name" . }}
+      component: mongo
+  template:
+    metadata:
+      labels:
+        app: {{ include "sentinelcare.name" . }}
+        component: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: "{{ .Values.image.mongo.repository }}:{{ .Values.image.mongo.tag }}"
+          imagePullPolicy: {{ .Values.image.mongo.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.mongo.port }}
+          volumeMounts:
+            - name: data
+              mountPath: /data/db
+          resources:
+            {{- toYaml .Values.resources.mongo | nindent 12 }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.mongo.storageSize }}

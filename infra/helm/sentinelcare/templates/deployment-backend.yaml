@@ -26,6 +26,28 @@ spec:
               value: "{{ .Values.mockModel.path }}"
             - name: ENVIRONMENT
               value: "{{ .Values.global.environment | default "dev" }}"
+            - name: PATIENTS_SERVICE_URL
+              value: "http://{{ include "sentinelcare.fullname" . }}-patients:{{ .Values.service.patients.port }}"
+            - name: VITALS_SERVICE_URL
+              value: "http://{{ include "sentinelcare.fullname" . }}-vitals:{{ .Values.service.vitals.port }}"
+            - name: ALERTS_SERVICE_URL
+              value: "http://{{ include "sentinelcare.fullname" . }}-alerts:{{ .Values.service.alerts.port }}"
+            - name: SCORING_SERVICE_URL
+              value: "http://{{ include "sentinelcare.fullname" . }}-scoring:{{ .Values.service.scoring.port }}"
+            - name: TASKS_SERVICE_URL
+              value: "http://{{ include "sentinelcare.fullname" . }}-tasks:{{ .Values.service.tasks.port }}"
+            - name: AUDIT_SERVICE_URL
+              value: "http://{{ include "sentinelcare.fullname" . }}-audit:{{ .Values.service.audit.port }}"
+            - name: NOTIFY_SERVICE_URL
+              value: "http://{{ include "sentinelcare.fullname" . }}-notifications:{{ .Values.service.notifications.port }}"
+            - name: AUTH_SERVICE_URL
+              value: "http://{{ include "sentinelcare.fullname" . }}-auth:{{ .Values.service.auth.port }}"
+            - name: AUTH_SECRET
+              value: "{{ .Values.authConfig.secret }}"
+            - name: AUTH_ISSUER
+              value: "{{ .Values.authConfig.issuer }}"
+            - name: AUTH_AUDIENCE
+              value: "{{ .Values.authConfig.audience }}"
           ports:
             - containerPort: {{ .Values.service.backend.port }}
           readinessProbe:

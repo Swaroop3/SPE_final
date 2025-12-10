@@ -10,15 +10,88 @@ image:
     repository: docker.io/your-org/sentinelcare-frontend
     tag: "latest"
     pullPolicy: IfNotPresent
+  patients:
+    repository: docker.io/your-org/sentinelcare-patients
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  vitals:
+    repository: docker.io/your-org/sentinelcare-vitals
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  alerts:
+    repository: docker.io/your-org/sentinelcare-alerts
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  scoring:
+    repository: docker.io/your-org/sentinelcare-scoring
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  tasks:
+    repository: docker.io/your-org/sentinelcare-tasks
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  audit:
+    repository: docker.io/your-org/sentinelcare-audit
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  auth:
+    repository: docker.io/your-org/sentinelcare-auth
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  notifications:
+    repository: docker.io/your-org/sentinelcare-notifications
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  simulator:
+    repository: docker.io/your-org/sentinelcare-simulator
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  mongo:
+    repository: mongo
+    tag: "7"
+    pullPolicy: IfNotPresent
 
 service:
   backend:
     port: 8000
   frontend:
     port: 80
+  patients:
+    port: 8101
+  vitals:
+    port: 8102
+  alerts:
+    port: 8103
+  scoring:
+    port: 8104
+  tasks:
+    port: 8105
+  audit:
+    port: 8106
+  auth:
+    port: 8100
+  notifications:
+    port: 8107
+  simulator:
+    port: 8110
+  mongo:
+    port: 27017
 
 mockModel:
   path: /app/models/mock_artifacts/sepsis_mock_model.json
+
+authConfig:
+  secret: super-secret-demo-key
+  issuer: sentinelcare-auth
+  audience: sentinelcare-clients
+  tokenExpMin: 120
+
+mongo:
+  database: sentinelcare
+  storageSize: 1Gi
+
+simulator:
+  intervalSeconds: 30
 
 ingress:
   enabled: false
@@ -34,6 +107,16 @@ ingress:
 resources:
   backend: {}
   frontend: {}
+  patients: {}
+  vitals: {}
+  alerts: {}
+  scoring: {}
+  tasks: {}
+  audit: {}
+  auth: {}
+  notifications: {}
+  simulator: {}
+  mongo: {}
 
 autoscaling:
   enabled: true
