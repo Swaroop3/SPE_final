@@ -227,6 +227,7 @@ PY
               # Helm deploy using pulled image tags (cluster must be configured on agent)
               helm upgrade --install ${APP_NAME} ${HELM_CHART_PATH} \
                 --namespace ${K8S_NAMESPACE} --create-namespace \
+                --set global.environment=dev \
                 --set image.backend.repository=${REGISTRY}/${APP_NAME}-backend \
                 --set image.backend.tag=${IMAGE_TAG} \
                 --set image.frontend.repository=${REGISTRY}/${APP_NAME}-frontend \
